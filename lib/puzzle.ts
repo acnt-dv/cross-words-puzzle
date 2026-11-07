@@ -21,16 +21,22 @@ export type PuzzleCell = {
 export const GRID_SIZE = 8;
 
 export const puzzleEntries: PuzzleEntry[] = [
-  { id: "a1", number: 1, direction: "across", row: 0, col: 6, answer: "مداد", clue: "وسیله‌ای برای نوشتن و طراحی" },
-  { id: "d2", number: 2, direction: "down", row: 0, col: 5, answer: "دوستانه", clue: "با مهر و صمیمیت" },
-  { id: "a3", number: 3, direction: "across", row: 1, col: 2, answer: "توپ", clue: "وسیلهٔ گرد بسیاری از ورزش‌ها" },
-  { id: "d4", number: 4, direction: "down", row: 1, col: 0, answer: "پرندگان", clue: "جانوران بال‌دار" },
-  { id: "a5", number: 5, direction: "across", row: 2, col: 6, answer: "استمرار", clue: "پیوستگی و ادامه داشتن" },
-  { id: "a6", number: 6, direction: "across", row: 3, col: 2, answer: "چمن", clue: "پوشش سبز و کوتاه زمین" },
-  { id: "a7", number: 7, direction: "across", row: 4, col: 7, answer: "بهار", clue: "فصل شکوفه‌ها" },
-  { id: "a8", number: 8, direction: "across", row: 5, col: 2, answer: "برگ", clue: "بخش سبز و پهن گیاه" },
-  { id: "a9", number: 9, direction: "across", row: 6, col: 6, answer: "شهر", clue: "محل بزرگ زندگی و کار مردم" },
-  { id: "a10", number: 10, direction: "across", row: 7, col: 2, answer: "آهن", clue: "فلزی پرکاربرد و محکم" },
+  { id: "a1", number: 1, direction: "across", row: 0, col: 3, answer: "گیشه", clue: "باجهٔ فروش بلیت یا ارائهٔ خدمات" },
+  { id: "d1", number: 1, direction: "down", row: 0, col: 3, answer: "گلگون", clue: "سرخ‌رنگ و شاداب" },
+  { id: "d2", number: 2, direction: "down", row: 0, col: 2, answer: "یغما", clue: "غارت و تاراج" },
+  { id: "d3", number: 3, direction: "down", row: 0, col: 1, answer: "شوری", clue: "مزه‌ای که از نمک می‌آید" },
+  { id: "d4", number: 4, direction: "down", row: 0, col: 0, answer: "هیکل", clue: "اندام و جثهٔ بدن" },
+  { id: "a5", number: 5, direction: "across", row: 1, col: 3, answer: "لغوی", clue: "مربوط به واژه و معنی آن" },
+  { id: "a6", number: 6, direction: "across", row: 2, col: 3, answer: "گمرک", clue: "محل کنترل کالاهای ورودی و خروجی" },
+  { id: "a7", number: 7, direction: "across", row: 3, col: 4, answer: "اوایل", clue: "بخش آغازین یک دوره" },
+  { id: "d7", number: 7, direction: "down", row: 3, col: 4, answer: "ارزید", clue: "ارزش داشت" },
+  { id: "a8", number: 8, direction: "across", row: 4, col: 7, answer: "میگرن", clue: "سردرد شدید و دوره‌ای" },
+  { id: "d8", number: 8, direction: "down", row: 4, col: 7, answer: "منجم", clue: "دانشمند ستاره‌شناس" },
+  { id: "d9", number: 9, direction: "down", row: 4, col: 6, answer: "یواش", clue: "آهسته، در گفتار روزمره" },
+  { id: "d10", number: 10, direction: "down", row: 4, col: 5, answer: "گیره", clue: "ابزار نگهدارنده و فشرده‌کننده" },
+  { id: "a11", number: 11, direction: "across", row: 5, col: 7, answer: "نویز", clue: "صدای مزاحم در یک پیام یا دستگاه" },
+  { id: "a12", number: 12, direction: "across", row: 6, col: 7, answer: "جاری", clue: "روان و در حال حرکت" },
+  { id: "a13", number: 13, direction: "across", row: 7, col: 7, answer: "مشهد", clue: "مرکز استان خراسان رضوی" },
 ];
 
 export function getEntryCells(entry: PuzzleEntry) {
