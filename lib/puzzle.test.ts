@@ -56,8 +56,19 @@ describe("Persian crossword puzzle", () => {
   });
 
   it("contains exactly eight horizontal and eight vertical clues", () => {
-    expect(puzzleEntries.filter((entry) => entry.direction === "across")).toHaveLength(8);
-    expect(puzzleEntries.filter((entry) => entry.direction === "down")).toHaveLength(8);
+    const across = puzzleEntries.filter((entry) => entry.direction === "across");
+    const down = puzzleEntries.filter((entry) => entry.direction === "down");
+    expect(across).toHaveLength(8);
+    expect(down).toHaveLength(8);
+    expect(across.map((entry) => entry.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(down.map((entry) => entry.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  });
+
+  it("maps horizontal numbers to rows and vertical numbers right-to-left to columns", () => {
+    const across = puzzleEntries.filter((entry) => entry.direction === "across");
+    const down = puzzleEntries.filter((entry) => entry.direction === "down");
+    expect(across.map((entry) => entry.row + 1)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(down.map((entry) => GRID_SIZE - entry.col)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
   it("crosses every playable square in both directions", () => {

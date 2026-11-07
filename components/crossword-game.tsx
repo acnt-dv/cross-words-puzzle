@@ -22,7 +22,7 @@ const normalizeLetter = (value: string) =>
 
 export function CrosswordGame() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [activeEntryId, setActiveEntryId] = useState("a1");
+  const [activeEntryId, setActiveEntryId] = useState("h1");
   const [activeCellKey, setActiveCellKey] = useState("0-3");
   const [checked, setChecked] = useState(false);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -111,7 +111,7 @@ export function CrosswordGame() {
     if (filledCount && !window.confirm("همهٔ پاسخ‌ها پاک شوند؟")) return;
     setAnswers({});
     setChecked(false);
-    selectEntry("a1", "0-3");
+    selectEntry("h1", "0-3");
   };
 
   return (
@@ -142,7 +142,14 @@ export function CrosswordGame() {
           </div>
 
           <div className="grid-frame">
-            <div className="crossword-grid" role="grid" aria-label="جدول هشت در هشت">
+            <div className="numbered-grid">
+              <div className="column-labels" aria-hidden="true">
+                {Array.from({ length: GRID_SIZE }, (_, index) => (
+                  <span key={index}>{(GRID_SIZE - index).toLocaleString("fa-IR")}</span>
+                ))}
+              </div>
+              <div className="axis-corner" aria-hidden="true" />
+              <div className="crossword-grid" role="grid" aria-label="جدول هشت در هشت؛ سطرهای افقی ۱ تا ۸ و ستون‌های عمودی ۱ تا ۸">
               {Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, index) => {
                 const row = Math.floor(index / GRID_SIZE);
                 const col = index % GRID_SIZE;
@@ -159,7 +166,6 @@ export function CrosswordGame() {
                     className={`letter-cell ${activeKeys.has(key) ? "is-in-word" : ""} ${activeCellKey === key ? "is-active" : ""} ${isCorrect ? "is-correct" : ""} ${isWrong ? "is-wrong" : ""}`}
                     key={key}
                   >
-                    {cell.number ? <span className="cell-number">{cell.number.toLocaleString("fa-IR")}</span> : null}
                     <input
                       ref={(node) => { inputRefs.current[key] = node; }}
                       value={answers[key] ?? ""}
@@ -193,6 +199,12 @@ export function CrosswordGame() {
                   </label>
                 );
               })}
+              </div>
+              <div className="row-labels" aria-hidden="true">
+                {Array.from({ length: GRID_SIZE }, (_, index) => (
+                  <span key={index}>{(index + 1).toLocaleString("fa-IR")}</span>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -258,7 +270,7 @@ export function CrosswordGame() {
           </div>
           {(["across", "down"] as Direction[]).map((direction) => (
             <section className="clue-group" key={direction}>
-              <h3>{direction === "across" ? "افقی" : "عمودی"}</h3>
+              <h3>{direction === "across" ? "افقی · سطرهای ۱ تا ۸" : "عمودی · ستون‌های ۱ تا ۸"}</h3>
               <ol>
                 {puzzleEntries.filter((entry) => entry.direction === direction).map((entry) => (
                   <li key={entry.id}>
