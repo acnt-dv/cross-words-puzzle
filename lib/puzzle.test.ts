@@ -17,7 +17,7 @@ describe("Persian crossword puzzle", () => {
     for (const entry of puzzleEntries) {
       expect(entry.clue.trim()).not.toBe("");
       expect(entry.answer).toMatch(/^[\u0600-\u06FF]+$/);
-      expect(entry.answer.length).toBeGreaterThanOrEqual(3);
+      expect(entry.answer.length).toBeGreaterThanOrEqual(2);
     }
   });
 
@@ -55,9 +55,28 @@ describe("Persian crossword puzzle", () => {
     expect(visited.size).toBe(puzzleCells.size);
   });
 
-  it("contains exactly eight horizontal and eight vertical clues", () => {
-    expect(puzzleEntries.filter((entry) => entry.direction === "across")).toHaveLength(8);
-    expect(puzzleEntries.filter((entry) => entry.direction === "down")).toHaveLength(8);
+  it("contains horizontal rows 1–8 and vertical columns 1–8", () => {
+    const across = puzzleEntries.filter((entry) => entry.direction === "across");
+    const down = puzzleEntries.filter((entry) => entry.direction === "down");
+    expect([...new Set(across.map((entry) => entry.number))]).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect([...new Set(down.map((entry) => entry.number))]).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+  });
+
+  it("maps horizontal numbers to rows and vertical numbers right-to-left to columns", () => {
+    const across = puzzleEntries.filter((entry) => entry.direction === "across");
+    const down = puzzleEntries.filter((entry) => entry.direction === "down");
+    for (const entry of across) expect(entry.number).toBe(entry.row + 1);
+    for (const entry of down) expect(entry.number).toBe(GRID_SIZE - entry.col);
+  });
+
+  it("uses the full board with scattered blocks instead of two separated halves", () => {
+    expect(puzzleCells.size).toBe(50);
+    for (let index = 0; index < GRID_SIZE; index++) {
+      const rowCells = [...puzzleCells.values()].filter((cell) => cell.row === index);
+      const columnCells = [...puzzleCells.values()].filter((cell) => cell.col === index);
+      expect(rowCells.length).toBeGreaterThanOrEqual(4);
+      expect(columnCells.length).toBeGreaterThanOrEqual(4);
+    }
   });
 
   it("crosses every playable square in both directions", () => {
