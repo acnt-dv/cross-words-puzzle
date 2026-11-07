@@ -1,7 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { GRID_SIZE, getEntryCells, puzzleCells, puzzleEntries } from "./puzzle";
+import puzzleSource from "../content/puzzles/classic-01.json";
+import { GRID_SIZE, buildPuzzleCells, getEntryCells, validatePuzzleDocument } from "./puzzle";
+
+const puzzle = validatePuzzleDocument(puzzleSource, "classic-01.json");
+const puzzleEntries = puzzle.entries;
+const puzzleCells = buildPuzzleCells(puzzleEntries);
 
 describe("Persian crossword puzzle", () => {
+  it("accepts the bundled JSON puzzle", () => {
+    expect(puzzle.id).toBe("classic-01");
+    expect(puzzle.size).toBe(8);
+  });
+
+  it("rejects a JSON puzzle with a broken crossing", () => {
+    const broken = structuredClone(puzzleSource);
+    broken.entries[0].answer = "کرنس";
+    expect(() => validatePuzzleDocument(broken, "broken.json")).toThrow(/تعارض حرف/);
+  });
+
   it("keeps every answer inside the 8×8 board", () => {
     for (const entry of puzzleEntries) {
       for (const cell of getEntryCells(entry)) {

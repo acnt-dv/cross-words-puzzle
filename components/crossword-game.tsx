@@ -3,10 +3,10 @@
 import { useMemo, useRef, useState } from "react";
 import {
   GRID_SIZE,
+  buildPuzzleCells,
   getEntryCells,
-  puzzleCells,
-  puzzleEntries,
   type Direction,
+  type PuzzleDocument,
 } from "@/lib/puzzle";
 
 const PERSIAN_KEY_ROWS = [
@@ -20,10 +20,16 @@ const normalizeLetter = (value: string) =>
     .filter((letter) => /[\u0600-\u06FF]/.test(letter))
     .at(-1) ?? "";
 
-export function CrosswordGame() {
+export function CrosswordGame({ puzzles }: { puzzles: PuzzleDocument[] }) {
+  const [selectedPuzzleId, setSelectedPuzzleId] = useState(puzzles[0].id);
+  const puzzle = puzzles.find((item) => item.id === selectedPuzzleId) ?? puzzles[0];
+  const puzzleEntries = puzzle.entries;
+  const puzzleCells = useMemo(() => buildPuzzleCells(puzzleEntries), [puzzleEntries]);
+  const initialEntry = puzzles[0].entries[0];
+  const initialCell = getEntryCells(initialEntry)[0];
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [activeEntryId, setActiveEntryId] = useState("h1a");
-  const [activeCellKey, setActiveCellKey] = useState("0-6");
+  const [activeEntryId, setActiveEntryId] = useState(initialEntry.id);
+  const [activeCellKey, setActiveCellKey] = useState(`${initialCell.row}-${initialCell.col}`);
   const [checked, setChecked] = useState(false);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const pointerStartedOnActiveCell = useRef(false);
@@ -109,9 +115,24 @@ export function CrosswordGame() {
 
   const resetPuzzle = () => {
     if (filledCount && !window.confirm("همهٔ پاسخ‌ها پاک شوند؟")) return;
+    const firstEntry = puzzleEntries[0];
+    const firstCell = getEntryCells(firstEntry)[0];
     setAnswers({});
     setChecked(false);
-    selectEntry("h1a", "0-6");
+    selectEntry(firstEntry.id, `${firstCell.row}-${firstCell.col}`);
+  };
+
+  const changePuzzle = (puzzleId: string) => {
+    const nextPuzzle = puzzles.find((item) => item.id === puzzleId);
+    if (!nextPuzzle) return;
+    const firstEntry = nextPuzzle.entries[0];
+    const firstCell = getEntryCells(firstEntry)[0];
+    setSelectedPuzzleId(puzzleId);
+    setAnswers({});
+    setChecked(false);
+    setActiveEntryId(firstEntry.id);
+    setActiveCellKey(`${firstCell.row}-${firstCell.col}`);
+    inputRefs.current = {};
   };
 
   return (
@@ -119,13 +140,21 @@ export function CrosswordGame() {
       <header className="hero">
         <div className="brand-mark" aria-hidden="true">و</div>
         <div>
-          <p className="eyebrow">جدول امروز · شمارهٔ ۱</p>
+          <p className="eyebrow">{puzzle.title}</p>
           <h1>واژه‌خانه</h1>
-          <p className="intro">۸ سطر افقی و ۸ ستون عمودی؛ هر شماره می‌تواند چند واژهٔ پیوسته داشته باشد.</p>
+          <p className="intro">{puzzle.description}</p>
         </div>
-        <div className="size-badge" aria-label="اندازهٔ جدول هشت در هشت">
-          <strong>۸ × ۸</strong>
-          <span>۱۶ پاسخ درهم‌تنیده</span>
+        <div className="header-controls">
+          <label className="puzzle-picker">
+            <span>انتخاب جدول</span>
+            <select value={puzzle.id} onChange={(event) => changePuzzle(event.target.value)}>
+              {puzzles.map((item) => <option value={item.id} key={item.id}>{item.title}</option>)}
+            </select>
+          </label>
+          <div className="size-badge" aria-label="اندازهٔ جدول هشت در هشت">
+            <strong>۸ × ۸</strong>
+            <span>{puzzleEntries.length.toLocaleString("fa-IR")} بخش واژه</span>
+          </div>
         </div>
       </header>
 
