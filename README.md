@@ -28,9 +28,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ```bash
 npm run lint
+npm test
 npm run typecheck
 npm run build
 ```
+
+The test suite validates grid bounds, Persian answer content, crossing consistency, and full board connectivity. GitHub Actions runs the same checks for every pull request and push to `main`.
 
 ## Planned evolution
 

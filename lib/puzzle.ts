@@ -25,7 +25,7 @@ export const puzzleEntries: PuzzleEntry[] = [
   { id: "d2", number: 2, direction: "down", row: 0, col: 5, answer: "دوستانه", clue: "با مهر و صمیمیت" },
   { id: "a3", number: 3, direction: "across", row: 1, col: 2, answer: "توپ", clue: "وسیلهٔ گرد بسیاری از ورزش‌ها" },
   { id: "d4", number: 4, direction: "down", row: 1, col: 0, answer: "پرندگان", clue: "جانوران بال‌دار" },
-  { id: "a5", number: 5, direction: "across", row: 2, col: 6, answer: "پسرک", clue: "کودک مذکر" },
+  { id: "a5", number: 5, direction: "across", row: 2, col: 6, answer: "استمرار", clue: "پیوستگی و ادامه داشتن" },
   { id: "a6", number: 6, direction: "across", row: 3, col: 2, answer: "چمن", clue: "پوشش سبز و کوتاه زمین" },
   { id: "a7", number: 7, direction: "across", row: 4, col: 7, answer: "بهار", clue: "فصل شکوفه‌ها" },
   { id: "a8", number: 8, direction: "across", row: 5, col: 2, answer: "برگ", clue: "بخش سبز و پهن گیاه" },
