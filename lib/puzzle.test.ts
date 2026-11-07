@@ -55,8 +55,17 @@ describe("Persian crossword puzzle", () => {
     expect(visited.size).toBe(puzzleCells.size);
   });
 
-  it("contains both horizontal and vertical clues", () => {
-    expect(puzzleEntries.some((entry) => entry.direction === "across")).toBe(true);
-    expect(puzzleEntries.some((entry) => entry.direction === "down")).toBe(true);
+  it("contains exactly eight horizontal and eight vertical clues", () => {
+    expect(puzzleEntries.filter((entry) => entry.direction === "across")).toHaveLength(8);
+    expect(puzzleEntries.filter((entry) => entry.direction === "down")).toHaveLength(8);
+  });
+
+  it("crosses every playable square in both directions", () => {
+    for (const cell of puzzleCells.values()) {
+      expect(cell.entryIds).toHaveLength(2);
+      const directions = cell.entryIds.map((id) => puzzleEntries.find((entry) => entry.id === id)?.direction);
+      expect(directions).toContain("across");
+      expect(directions).toContain("down");
+    }
   });
 });

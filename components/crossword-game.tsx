@@ -23,10 +23,11 @@ const normalizeLetter = (value: string) =>
 export function CrosswordGame() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [activeEntryId, setActiveEntryId] = useState("a1");
-  const [activeCellKey, setActiveCellKey] = useState("0-6");
+  const [activeCellKey, setActiveCellKey] = useState("0-3");
   const [checked, setChecked] = useState(false);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const pointerStartedOnActiveCell = useRef(false);
+  const pendingFocusEntryId = useRef<string | null>(null);
   const activeEntry = puzzleEntries.find((entry) => entry.id === activeEntryId) ?? puzzleEntries[0];
   const activeKeys = useMemo(
     () => new Set(getEntryCells(activeEntry).map(({ row, col }) => `${row}-${col}`)),
@@ -37,9 +38,10 @@ export function CrosswordGame() {
   const isComplete = filledCount === totalCount;
   const isSolved = isComplete && [...puzzleCells].every(([key, cell]) => answers[key] === cell.answer);
 
-  const focusCell = (key: string) => {
+  const focusCell = (key: string, entryId = activeEntryId) => {
+    pendingFocusEntryId.current = entryId;
     setActiveCellKey(key);
-    requestAnimationFrame(() => inputRefs.current[key]?.focus());
+    inputRefs.current[key]?.focus({ preventScroll: true });
   };
 
   const selectEntry = (entryId: string, preferredKey?: string) => {
@@ -51,11 +53,17 @@ export function CrosswordGame() {
     const target = preferredKey && keys.includes(preferredKey)
       ? preferredKey
       : keys.find((key) => !answers[key]) ?? keys[0];
-    focusCell(target);
+    focusCell(target, entryId);
   };
 
   const selectCell = (key: string, entryIds: string[]) => {
-    const nextEntry = entryIds.includes(activeEntryId) ? activeEntryId : entryIds[0];
+    const pendingEntry = pendingFocusEntryId.current;
+    const nextEntry = pendingEntry && entryIds.includes(pendingEntry)
+      ? pendingEntry
+      : entryIds.includes(activeEntryId)
+        ? activeEntryId
+        : entryIds[0];
+    pendingFocusEntryId.current = null;
     setActiveEntryId(nextEntry);
     setActiveCellKey(key);
   };
@@ -103,7 +111,7 @@ export function CrosswordGame() {
     if (filledCount && !window.confirm("همهٔ پاسخ‌ها پاک شوند؟")) return;
     setAnswers({});
     setChecked(false);
-    selectEntry("a1", "0-6");
+    selectEntry("a1", "0-3");
   };
 
   return (
@@ -113,11 +121,11 @@ export function CrosswordGame() {
         <div>
           <p className="eyebrow">جدول امروز · شمارهٔ ۱</p>
           <h1>واژه‌خانه</h1>
-          <p className="intro">یک جدول کوچک فارسی؛ سرنخ را بخوانید و خانه‌ها را با صفحه‌کلید پر کنید.</p>
+          <p className="intro">۸ واژهٔ افقی و ۸ واژهٔ عمودی؛ هر حرف مشترک، راهنمای پاسخ دیگر است.</p>
         </div>
         <div className="size-badge" aria-label="اندازهٔ جدول هشت در هشت">
           <strong>۸ × ۸</strong>
-          <span>نسخهٔ آزمایشی</span>
+          <span>۱۶ پاسخ درهم‌تنیده</span>
         </div>
       </header>
 
