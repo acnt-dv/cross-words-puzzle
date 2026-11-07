@@ -9,6 +9,12 @@ import {
   type Direction,
 } from "@/lib/puzzle";
 
+const PERSIAN_KEY_ROWS = [
+  ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج", "چ"],
+  ["ش", "س", "ی", "ب", "ل", "ا", "ت", "ن", "م", "ک", "گ"],
+  ["ظ", "ط", "ز", "ر", "ذ", "د", "پ", "و", "ژ"],
+];
+
 const normalizeLetter = (value: string) =>
   [...value.replace(/ي/g, "ی").replace(/ك/g, "ک")]
     .filter((letter) => /[\u0600-\u06FF]/.test(letter))
@@ -20,6 +26,7 @@ export function CrosswordGame() {
   const [activeCellKey, setActiveCellKey] = useState("0-6");
   const [checked, setChecked] = useState(false);
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const pointerStartedOnActiveCell = useRef(false);
   const activeEntry = puzzleEntries.find((entry) => entry.id === activeEntryId) ?? puzzleEntries[0];
   const activeKeys = useMemo(
     () => new Set(getEntryCells(activeEntry).map(({ row, col }) => `${row}-${col}`)),
@@ -49,7 +56,16 @@ export function CrosswordGame() {
 
   const selectCell = (key: string, entryIds: string[]) => {
     const nextEntry = entryIds.includes(activeEntryId) ? activeEntryId : entryIds[0];
-    selectEntry(nextEntry, key);
+    setActiveEntryId(nextEntry);
+    setActiveCellKey(key);
+  };
+
+  const cycleCellDirection = (key: string, entryIds: string[]) => {
+    if (entryIds.length < 2) return;
+    const currentIndex = entryIds.indexOf(activeEntryId);
+    const nextEntry = entryIds[(currentIndex + 1) % entryIds.length];
+    setActiveEntryId(nextEntry);
+    setActiveCellKey(key);
   };
 
   const moveWithinEntry = (key: string, offset: number) => {
@@ -65,6 +81,22 @@ export function CrosswordGame() {
     setAnswers((current) => ({ ...current, [key]: value }));
     setChecked(false);
     if (value) moveWithinEntry(key, 1);
+  };
+
+  const deleteActiveCell = () => {
+    if (answers[activeCellKey]) {
+      setAnswers((current) => ({ ...current, [activeCellKey]: "" }));
+      setChecked(false);
+      return;
+    }
+
+    const keys = getEntryCells(activeEntry).map(({ row, col }) => `${row}-${col}`);
+    const previousKey = keys[keys.indexOf(activeCellKey) - 1];
+    if (!previousKey) return;
+
+    setAnswers((current) => ({ ...current, [previousKey]: "" }));
+    setChecked(false);
+    focusCell(previousKey);
   };
 
   const resetPuzzle = () => {
@@ -118,16 +150,20 @@ export function CrosswordGame() {
                   <label
                     className={`letter-cell ${activeKeys.has(key) ? "is-in-word" : ""} ${activeCellKey === key ? "is-active" : ""} ${isCorrect ? "is-correct" : ""} ${isWrong ? "is-wrong" : ""}`}
                     key={key}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                      selectCell(key, cell.entryIds);
-                    }}
                   >
                     {cell.number ? <span className="cell-number">{cell.number.toLocaleString("fa-IR")}</span> : null}
                     <input
                       ref={(node) => { inputRefs.current[key] = node; }}
                       value={answers[key] ?? ""}
                       onFocus={() => selectCell(key, cell.entryIds)}
+                      onPointerDown={() => {
+                        pointerStartedOnActiveCell.current = activeCellKey === key;
+                      }}
+                      onClick={() => {
+                        if (pointerStartedOnActiveCell.current) {
+                          cycleCellDirection(key, cell.entryIds);
+                        }
+                      }}
                       onChange={(event) => updateCell(key, event.target.value)}
                       onKeyDown={(event) => {
                         if (event.key === "Backspace") {
@@ -140,7 +176,10 @@ export function CrosswordGame() {
                         if (event.key === "ArrowUp") moveWithinEntry(key, activeEntry.direction === "down" ? -1 : 0);
                       }}
                       inputMode="text"
+                      lang="fa"
                       autoComplete="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
                       aria-label={`ردیف ${row + 1}، ستون ${col + 1}`}
                     />
                   </label>
@@ -148,6 +187,45 @@ export function CrosswordGame() {
               })}
             </div>
           </div>
+
+          <section className="virtual-keyboard" aria-label="صفحه‌کلید فارسی">
+            <div className="keyboard-heading">
+              <div>
+                <strong>صفحه‌کلید فارسی</strong>
+                <span>برای تغییر جهت، روی خانهٔ تقاطع دوباره بزنید.</span>
+              </div>
+              <span className="direction-chip">
+                {activeEntry.direction === "across" ? "افقی ←" : "عمودی ↓"}
+              </span>
+            </div>
+            <div className="keyboard-rows" dir="rtl">
+              {PERSIAN_KEY_ROWS.map((row, rowIndex) => (
+                <div className="keyboard-row" key={rowIndex}>
+                  {row.map((letter) => (
+                    <button
+                      type="button"
+                      className="letter-key"
+                      key={letter}
+                      onClick={() => updateCell(activeCellKey, letter)}
+                      aria-label={`حرف ${letter}`}
+                    >
+                      {letter}
+                    </button>
+                  ))}
+                  {rowIndex === PERSIAN_KEY_ROWS.length - 1 ? (
+                    <button
+                      type="button"
+                      className="delete-key"
+                      onClick={deleteActiveCell}
+                      aria-label="پاک کردن حرف"
+                    >
+                      حذف ⌫
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
 
           <div className="actions">
             <button className="primary-button" type="button" onClick={() => setChecked(true)}>بررسی پاسخ‌ها</button>
