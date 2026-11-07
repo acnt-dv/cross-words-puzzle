@@ -2,7 +2,7 @@ import "server-only";
 
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { validatePuzzleDocument, type PuzzleDocument } from "./puzzle";
+import { validatePuzzleCollection, validatePuzzleDocument, type PuzzleDocument } from "./puzzle";
 
 export async function loadPuzzles(): Promise<PuzzleDocument[]> {
   const directory = path.join(process.cwd(), "content", "puzzles");
@@ -21,10 +21,5 @@ export async function loadPuzzles(): Promise<PuzzleDocument[]> {
     return validatePuzzleDocument(parsed, filename);
   }));
 
-  const ids = new Set<string>();
-  for (const puzzle of puzzles) {
-    if (ids.has(puzzle.id)) throw new Error(`شناسهٔ جدول تکراری است: ${puzzle.id}`);
-    ids.add(puzzle.id);
-  }
-  return puzzles;
+  return validatePuzzleCollection(puzzles);
 }

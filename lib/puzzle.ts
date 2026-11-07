@@ -134,3 +134,24 @@ export function validatePuzzleDocument(value: unknown, source = "فایل جدو
 
   return { ...value, entries } as PuzzleDocument;
 }
+
+export function validatePuzzleCollection(puzzles: PuzzleDocument[]) {
+  const ids = new Set<string>();
+  const answers = new Map<string, string>();
+
+  for (const puzzle of puzzles) {
+    assertPuzzle(!ids.has(puzzle.id), `شناسهٔ جدول تکراری است: ${puzzle.id}`);
+    ids.add(puzzle.id);
+
+    for (const entry of puzzle.entries) {
+      const previousPuzzleId = answers.get(entry.answer);
+      assertPuzzle(
+        !previousPuzzleId,
+        `پاسخ «${entry.answer}» در جدول‌های ${previousPuzzleId} و ${puzzle.id} تکرار شده است.`,
+      );
+      answers.set(entry.answer, puzzle.id);
+    }
+  }
+
+  return puzzles;
+}

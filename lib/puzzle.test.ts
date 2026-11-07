@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import puzzleSource from "../content/puzzles/classic-01.json";
-import { GRID_SIZE, buildPuzzleCells, getEntryCells, validatePuzzleDocument } from "./puzzle";
+import {
+  GRID_SIZE,
+  buildPuzzleCells,
+  getEntryCells,
+  validatePuzzleCollection,
+  validatePuzzleDocument,
+} from "./puzzle";
 
 const puzzle = validatePuzzleDocument(puzzleSource, "classic-01.json");
 const puzzleEntries = puzzle.entries;
@@ -16,6 +22,12 @@ describe("Persian crossword puzzle", () => {
     const broken = structuredClone(puzzleSource);
     broken.entries[0].answer = "کرنس";
     expect(() => validatePuzzleDocument(broken, "broken.json")).toThrow(/تعارض حرف/);
+  });
+
+  it("rejects answers reused across different puzzle files", () => {
+    const secondPuzzle = structuredClone(puzzle);
+    secondPuzzle.id = "another-puzzle";
+    expect(() => validatePuzzleCollection([puzzle, secondPuzzle])).toThrow(/پاسخ «کرنش»/);
   });
 
   it("keeps every answer inside the 8×8 board", () => {
