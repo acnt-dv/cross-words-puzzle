@@ -6,7 +6,8 @@
 
 - Next.js, React, and TypeScript
 - Persian UI and right-to-left layout
-- One fully interlocked 8×8 crossword with rows 1–8 as horizontal clues and right-to-left columns 1–8 as vertical clues
+- One full-board 8×8 crossword with scattered blocks, rows 1–8 as horizontal clue lines, and right-to-left columns 1–8 as vertical clue lines
+- Multi-part clue lines, matching the structure of traditional Persian newspaper crosswords
 - Keyboard input, clue selection, answer checking, and reset
 - Built-in Persian virtual keyboard for phones and devices without a Persian keyboard
 - Responsive, accessible interface
@@ -36,7 +37,7 @@ npm run typecheck
 npm run build
 ```
 
-The test suite validates grid bounds, Persian answer content, crossing consistency, full board connectivity, the exact 1–8 numbering on both axes, and the rule that every playable square belongs to one horizontal row and one vertical column answer. GitHub Actions runs the same checks for every pull request and push to `main`.
+The test suite validates grid bounds, Persian answer content, crossing consistency, full-board coverage, the exact 1–8 numbering on both axes, and the rule that every playable square belongs to one horizontal row segment and one vertical column segment. GitHub Actions runs the same checks for every pull request and push to `main`.
 
 ## Planned evolution
 

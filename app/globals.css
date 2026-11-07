@@ -349,13 +349,35 @@ h1 {
 .clue-group h3 { margin: 0 10px 8px; font-size: .83rem; color: var(--muted); }
 .clue-group ol { margin: 0; padding: 0; list-style: none; }
 
+.clue-line {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 6px;
+  align-items: start;
+  padding: 5px 0;
+}
+
+.clue-line-number {
+  display: grid;
+  min-height: 34px;
+  place-items: center;
+  color: var(--orange);
+  font-weight: 800;
+}
+
+.clue-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 .clue-group button {
   display: grid;
-  grid-template-columns: 28px 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-  width: 100%;
-  padding: 10px;
+  flex: 1 1 130px;
+  padding: 8px 9px;
   border: 0;
   border-radius: 10px;
   background: transparent;
@@ -365,7 +387,7 @@ h1 {
 
 .clue-group button:hover { background: #f2ede3; }
 .clue-group button.is-selected { background: var(--green-soft); color: var(--green); }
-.clue-group button > span { color: var(--orange); font-weight: 800; }
+.clue-group button > span { min-width: 0; }
 .clue-group small { color: var(--muted); font-size: .67rem; white-space: nowrap; }
 
 footer {
