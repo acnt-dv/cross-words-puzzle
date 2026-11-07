@@ -1,0 +1,32 @@
+:root {
+  color-scheme: light;
+  font-family: Tahoma, Arial, sans-serif;
+  background: #f5efe4;
+  color: #172620;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(3rem, 12vw, 7rem);
+}
+
+p {
+  color: #5d6f66;
+  font-size: 1.125rem;
+}
