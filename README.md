@@ -8,6 +8,7 @@
 - Persian UI and right-to-left layout
 - One 8×8 crossword with across and down clues
 - Keyboard input, clue selection, answer checking, and reset
+- Built-in Persian virtual keyboard for phones and devices without a Persian keyboard
 - Responsive, accessible interface
 - No account, backend, timer, or puzzle editor in the first version
 
@@ -23,6 +24,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+Select a clue or tap a white square, then type with the device keyboard or the built-in Persian keyboard. Tap a crossing square a second time to switch between its horizontal and vertical answers.
 
 ## Quality checks
 

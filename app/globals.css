@@ -202,6 +202,85 @@ h1 {
   pointer-events: none;
 }
 
+.virtual-keyboard {
+  width: min(100%, 610px);
+  margin: 20px auto 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f8f3e9;
+}
+
+.keyboard-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.keyboard-heading > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.keyboard-heading strong { font-size: .84rem; }
+.keyboard-heading span { color: var(--muted); font-size: .67rem; }
+
+.keyboard-heading .direction-chip {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 800;
+}
+
+.keyboard-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.letter-key, .delete-key {
+  display: grid;
+  min-width: 0;
+  height: clamp(34px, 5vw, 42px);
+  place-items: center;
+  border: 1px solid #d8cebe;
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: 0 2px 0 #d8cebe;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.letter-key {
+  flex: 1 1 0;
+  max-width: 42px;
+}
+
+.delete-key {
+  flex: 1.9 1 0;
+  max-width: 82px;
+  padding: 0 8px;
+  background: #efe3d5;
+  color: #74452f;
+  font-size: .72rem;
+}
+
+.letter-key:active, .delete-key:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #d8cebe;
+}
+
 .actions {
   display: flex;
   justify-content: center;
@@ -292,6 +371,12 @@ footer p { margin: 0; }
   .grid-frame { padding: 7px; border-radius: 12px; }
   .crossword-grid { gap: 1px; }
   .letter-cell.is-active { box-shadow: inset 0 0 0 3px var(--orange); }
+  .virtual-keyboard { margin-top: 14px; padding: 10px 7px; border-radius: 12px; }
+  .keyboard-heading { padding: 0 4px; }
+  .keyboard-heading > div span { display: none; }
+  .keyboard-row { gap: 2px; }
+  .letter-key, .delete-key { height: 36px; border-radius: 6px; font-size: .86rem; }
+  .delete-key { font-size: .64rem; padding: 0 4px; }
   .actions { flex-direction: column; }
   .clues-card { grid-template-columns: 1fr; border-radius: 18px; }
   .clues-heading { padding: 20px; }
