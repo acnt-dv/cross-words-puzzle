@@ -1,5 +1,7 @@
 import { CrosswordGame } from "@/components/crossword-game";
+import { loadPuzzles } from "@/lib/load-puzzles";
 
-export default function Home() {
-  return <CrosswordGame />;
+export default async function Home() {
+  const puzzles = await loadPuzzles();
+  return <CrosswordGame puzzles={puzzles} />;
 }

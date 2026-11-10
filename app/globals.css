@@ -96,6 +96,34 @@ h1 {
 .size-badge strong { font-size: 1.25rem; }
 .size-badge span { color: var(--muted); font-size: .7rem; }
 
+.header-controls {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.puzzle-picker {
+  display: flex;
+  min-width: 180px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgb(255 253 248 / 65%);
+}
+
+.puzzle-picker > span { color: var(--muted); font-size: .68rem; font-weight: 700; }
+.puzzle-picker select {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+}
+
 .game-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(300px, .75fr);
@@ -412,6 +440,8 @@ footer p { margin: 0; }
   .page-shell { width: min(100% - 20px, 1180px); padding-top: 20px; }
   .hero { grid-template-columns: auto 1fr; gap: 12px; padding-bottom: 20px; }
   .brand-mark { width: 52px; height: 52px; border-radius: 14px 14px 14px 3px; }
+  .header-controls { grid-column: 1 / -1; }
+  .puzzle-picker { width: 100%; min-width: 0; }
   .size-badge { display: none; }
   .intro { font-size: .8rem; }
   .progress-row { grid-template-columns: 1fr; gap: 10px; }
