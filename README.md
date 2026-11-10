@@ -31,14 +31,15 @@ Select a clue or tap a white square, then type with the device keyboard or the b
 
 ## Add a new puzzle
 
-1. Open the ready-to-copy [Persian puzzle-generation prompt](docs/puzzle-generation-prompt.fa.md) and replace its topic, difficulty, ID, and title placeholders.
-2. Save the model's JSON-only response as a new `.json` file in [`content/puzzles`](content/puzzles). The filename may be different from the puzzle ID, but both should be unique.
-3. Restart `npm run dev`, or run `npm run build` for a production build.
-4. Choose the new puzzle from the **انتخاب جدول** menu.
+1. Run `npm run generate:layout`. It creates a genuinely new, asymmetric block pattern; it never selects from a fixed template.
+2. Copy the emitted `blocks` array into the ready-to-copy [Persian puzzle-generation prompt](docs/puzzle-generation-prompt.fa.md), then replace its topic, difficulty, ID, and title placeholders. Tell the model to preserve that exact `blocks` array while it creates the answers and clues.
+3. Save the model's JSON-only response as a new `.json` file in [`content/puzzles`](content/puzzles). The filename may be different from the puzzle ID, but both should be unique.
+4. Restart `npm run dev`, or run `npm run build` for a production build.
+5. Choose the new puzzle from the **انتخاب جدول** menu.
 
 The app discovers every JSON file in that folder at startup. It rejects malformed JSON, duplicate IDs, out-of-bounds answers, incorrect 1–8 numbering, mismatched crossing letters, disconnected layouts, sparse rows or columns, and any playable square that is not shared by exactly one horizontal and one vertical entry. The error includes the source filename and the invalid field or cell.
 
-Each puzzle owns its own layout: black squares are inferred from cells not covered by entries. When authoring a new puzzle, create a fresh, scattered, asymmetric black-square pattern rather than reusing a prior layout. The generation prompt includes this requirement.
+Each puzzle owns its own layout. For new puzzles, `blocks` is the exact list of black cells and must exactly match the cells not covered by entries. The generator enforces 12–24 scattered, asymmetric blocks, at least four white cells per row and column, connected white cells, and no run of three adjacent black cells horizontally or vertically. L-shaped and zig-zag block groups are allowed. The validator rejects an explicit repeated layout across puzzle files.
 
 The complete machine-readable shape is documented in [`docs/puzzle.schema.json`](docs/puzzle.schema.json). The schema helps editors with autocomplete, while the application validator enforces the additional geometric and crossing rules.
 

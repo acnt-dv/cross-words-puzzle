@@ -10,12 +10,18 @@ export type PuzzleEntry = {
   clue: string;
 };
 
+export type PuzzleBlock = {
+  row: number;
+  col: number;
+};
+
 export type PuzzleDocument = {
   version: 1;
   id: string;
   title: string;
   description: string;
   size: 8;
+  blocks?: PuzzleBlock[];
   entries: PuzzleEntry[];
 };
 
@@ -55,6 +61,23 @@ export function buildPuzzleCells(entries: PuzzleEntry[]) {
     });
   }
   return cells;
+}
+
+export function getPuzzleBlocks(cells: Map<string, PuzzleCell>) {
+  const blocks: PuzzleBlock[] = [];
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      if (!cells.has(`${row}-${col}`)) blocks.push({ row, col });
+    }
+  }
+  return blocks;
+}
+
+export function getPatternSignature(blocks: PuzzleBlock[]) {
+  return [...blocks]
+    .sort((a, b) => a.row - b.row || a.col - b.col)
+    .map(({ row, col }) => `${row}-${col}`)
+    .join(",");
 }
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -132,16 +155,61 @@ export function validatePuzzleDocument(value: unknown, source = "فایل جدو
   }
   assertPuzzle(visited.size === cells.size, `${source}: خانه‌های سفید باید یک شبکهٔ متصل بسازند.`);
 
+  if (value.blocks !== undefined) {
+    assertPuzzle(Array.isArray(value.blocks), `${source}: blocks باید یک آرایه باشد.`);
+    assertPuzzle(value.blocks.length >= 12 && value.blocks.length <= 24, `${source}: blocks باید بین 12 تا 24 خانهٔ بسته داشته باشد.`);
+
+    const declaredBlocks = value.blocks.map((rawBlock, index): PuzzleBlock => {
+      const label = `${source}: blocks[${index}]`;
+      assertPuzzle(isRecord(rawBlock), `${label} باید یک شیء باشد.`);
+      assertPuzzle(Number.isInteger(rawBlock.row) && Number(rawBlock.row) >= 0 && Number(rawBlock.row) < GRID_SIZE, `${label}.row باید بین 0 و 7 باشد.`);
+      assertPuzzle(Number.isInteger(rawBlock.col) && Number(rawBlock.col) >= 0 && Number(rawBlock.col) < GRID_SIZE, `${label}.col باید بین 0 و 7 باشد.`);
+      return { row: rawBlock.row as number, col: rawBlock.col as number };
+    });
+
+    const declaredSignature = getPatternSignature(declaredBlocks);
+    const inferredSignature = getPatternSignature(getPuzzleBlocks(cells));
+    assertPuzzle(
+      declaredSignature === inferredSignature,
+      `${source}: blocks باید دقیقاً با خانه‌های پوشش‌نداده‌شده توسط entries برابر باشد.`,
+    );
+
+    const blockKeys = new Set(declaredBlocks.map(({ row, col }) => `${row}-${col}`));
+    assertPuzzle(blockKeys.size === declaredBlocks.length, `${source}: هیچ مختصات تکراری در blocks مجاز نیست.`);
+    for (let index = 0; index < GRID_SIZE; index++) {
+      let horizontalRun = 0;
+      let verticalRun = 0;
+      for (let position = 0; position < GRID_SIZE; position++) {
+        horizontalRun = blockKeys.has(`${index}-${position}`) ? horizontalRun + 1 : 0;
+        verticalRun = blockKeys.has(`${position}-${index}`) ? verticalRun + 1 : 0;
+        assertPuzzle(horizontalRun <= 2, `${source}: بیش از دو خانهٔ بستهٔ افقیِ پیوسته مجاز نیست.`);
+        assertPuzzle(verticalRun <= 2, `${source}: بیش از دو خانهٔ بستهٔ عمودیِ پیوسته مجاز نیست.`);
+      }
+    }
+    const mirroredHorizontally = declaredBlocks.every(({ row, col }) => blockKeys.has(`${row}-${GRID_SIZE - 1 - col}`));
+    const mirroredVertically = declaredBlocks.every(({ row, col }) => blockKeys.has(`${GRID_SIZE - 1 - row}-${col}`));
+    const rotationallySymmetric = declaredBlocks.every(({ row, col }) => blockKeys.has(`${GRID_SIZE - 1 - row}-${GRID_SIZE - 1 - col}`));
+    assertPuzzle(!mirroredHorizontally && !mirroredVertically && !rotationallySymmetric, `${source}: الگوی blocks باید نامتقارن باشد.`);
+  }
+
   return { ...value, entries } as PuzzleDocument;
 }
 
 export function validatePuzzleCollection(puzzles: PuzzleDocument[]) {
   const ids = new Set<string>();
   const answers = new Map<string, string>();
+  const patterns = new Map<string, string>();
 
   for (const puzzle of puzzles) {
     assertPuzzle(!ids.has(puzzle.id), `شناسهٔ جدول تکراری است: ${puzzle.id}`);
     ids.add(puzzle.id);
+
+    if (puzzle.blocks) {
+      const signature = getPatternSignature(puzzle.blocks);
+      const previousPuzzleId = patterns.get(signature);
+      assertPuzzle(!previousPuzzleId, `الگوی خانه‌های بسته در جدول‌های ${previousPuzzleId} و ${puzzle.id} تکرار شده است.`);
+      patterns.set(signature, puzzle.id);
+    }
 
     for (const entry of puzzle.entries) {
       const previousPuzzleId = answers.get(entry.answer);

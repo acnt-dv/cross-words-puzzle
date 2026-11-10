@@ -3,6 +3,7 @@ import puzzleSource from "../content/puzzles/classic-01.json";
 import {
   GRID_SIZE,
   buildPuzzleCells,
+  getPuzzleBlocks,
   getEntryCells,
   validatePuzzleCollection,
   validatePuzzleDocument,
@@ -11,6 +12,16 @@ import {
 const puzzle = validatePuzzleDocument(puzzleSource, "classic-01.json");
 const puzzleEntries = puzzle.entries;
 const puzzleCells = buildPuzzleCells(puzzleEntries);
+const anotherValidLayout = [
+  { row: 0, col: 0 }, { row: 0, col: 2 },
+  { row: 1, col: 4 }, { row: 1, col: 6 },
+  { row: 2, col: 1 }, { row: 2, col: 5 },
+  { row: 3, col: 3 }, { row: 3, col: 7 },
+  { row: 4, col: 0 }, { row: 4, col: 4 },
+  { row: 5, col: 2 }, { row: 5, col: 6 },
+  { row: 6, col: 1 }, { row: 6, col: 5 },
+  { row: 7, col: 3 }, { row: 7, col: 7 },
+];
 
 describe("Persian crossword puzzle", () => {
   it("accepts the bundled JSON puzzle", () => {
@@ -28,6 +39,26 @@ describe("Persian crossword puzzle", () => {
     const secondPuzzle = structuredClone(puzzle);
     secondPuzzle.id = "another-puzzle";
     expect(() => validatePuzzleCollection([puzzle, secondPuzzle])).toThrow(/پاسخ «کرنش»/);
+  });
+
+  it("rejects an explicit block list that does not match the grid", () => {
+    const withBlocks = structuredClone(puzzle);
+    withBlocks.blocks = anotherValidLayout;
+    expect(() => validatePuzzleDocument(withBlocks, "wrong-blocks.json")).toThrow(/blocks باید دقیقاً/);
+  });
+
+  it("rejects an explicit block pattern reused by another puzzle", () => {
+    const first = structuredClone(puzzle);
+    first.blocks = anotherValidLayout;
+    const second = structuredClone(first);
+    second.id = "same-layout";
+    expect(() => validatePuzzleCollection([first, second])).toThrow(/الگوی خانه‌های بسته/);
+  });
+
+  it("rejects three consecutive explicit blocks", () => {
+    const withBlocks = structuredClone(puzzle);
+    withBlocks.blocks = getPuzzleBlocks(puzzleCells);
+    expect(() => validatePuzzleDocument(withBlocks, "three-blocks.json")).toThrow(/بیش از دو خانهٔ بسته/);
   });
 
   it("keeps every answer inside the 8×8 board", () => {

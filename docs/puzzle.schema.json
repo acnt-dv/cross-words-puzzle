@@ -11,6 +11,20 @@
     "title": { "type": "string", "minLength": 1 },
     "description": { "type": "string" },
     "size": { "const": 8 },
+    "blocks": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["row", "col"],
+        "properties": {
+          "row": { "type": "integer", "minimum": 0, "maximum": 7 },
+          "col": { "type": "integer", "minimum": 0, "maximum": 7 }
+        }
+      }
+    },
     "entries": {
       "type": "array",
       "minItems": 16,
@@ -30,5 +44,5 @@
       }
     }
   },
-  "$comment": "Application validation additionally enforces bounds, exact row/column numbering, matching crossing letters, at least 40 white cells, full connectivity, and one across plus one down entry per white cell."
+  "$comment": "Application validation additionally enforces bounds, exact block coverage, unique block coordinates, asymmetric non-reused block patterns, no horizontal or vertical run of three black cells, exact row/column numbering, matching crossing letters, at least 40 white cells, full connectivity, and one across plus one down entry per white cell."
 }
