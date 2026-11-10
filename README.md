@@ -38,6 +38,8 @@ Select a clue or tap a white square, then type with the device keyboard or the b
 
 The app discovers every JSON file in that folder at startup. It rejects malformed JSON, duplicate IDs, out-of-bounds answers, incorrect 1–8 numbering, mismatched crossing letters, disconnected layouts, sparse rows or columns, and any playable square that is not shared by exactly one horizontal and one vertical entry. The error includes the source filename and the invalid field or cell.
 
+Each puzzle owns its own layout: black squares are inferred from cells not covered by entries. When authoring a new puzzle, create a fresh, scattered, asymmetric black-square pattern rather than reusing a prior layout. The generation prompt includes this requirement.
+
 The complete machine-readable shape is documented in [`docs/puzzle.schema.json`](docs/puzzle.schema.json). The schema helps editors with autocomplete, while the application validator enforces the additional geometric and crossing rules.
 
 ## Quality checks
